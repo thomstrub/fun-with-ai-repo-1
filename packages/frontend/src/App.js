@@ -55,6 +55,25 @@ function App() {
     }
   };
 
+  const handleDelete = async (itemId) => {
+    try {
+      const response = await fetch(`/api/items/${itemId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete item');
+      }
+
+      // Remove the deleted item from the local state
+      setData(data.filter(item => item.id !== itemId));
+      setError(null);
+    } catch (err) {
+      setError('Error deleting item: ' + err.message);
+      console.error('Error deleting item:', err);
+    }
+  };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -84,7 +103,23 @@ function App() {
             <ul>
               {data.length > 0 ? (
                 data.map((item) => (
-                  <li key={item.id}>{item.name}</li>
+                  <li key={item.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span>{item.name}</span>
+                    <button 
+                      onClick={() => handleDelete(item.id)}
+                      style={{
+                        backgroundColor: '#ff4444',
+                        color: 'white',
+                        border: 'none',
+                        padding: '4px 8px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '12px'
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </li>
                 ))
               ) : (
                 <p>No items found. Add some!</p>
